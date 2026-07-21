@@ -1,0 +1,8 @@
+append function_tag minecraft:load {
+    "values": [
+        "ion:load"
+    ]
+}
+
+function ion:load:
+    tellraw @a "Ion has successfully loaded"
