@@ -1,0 +1,26 @@
+{
+    "name": "Ion",
+    "author": "ARandomPigeon and Axallia",
+
+    "data_pack": {
+        "load": ["src"]
+    },
+    "resource_pack": {
+        "load": ["src"]
+    },
+    "meta": {
+        "bolt": {
+            "entrypoint": "*"
+        }
+    },
+    "require": ["bolt"],
+
+    "pipeline": [
+        "beet.contrib.minify_function",
+        "beet.contrib.minify_json",
+        "mecha"
+    ],
+    
+
+    "output": ".build"
+}
