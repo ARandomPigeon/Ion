@@ -5,6 +5,7 @@
 
 .build/
 .venv/
+.beet_cache/
 
 # User-specific files
 *.rsuser
