@@ -4,12 +4,8 @@ append function_tag minecraft:load {
     ]
 }
 
-## WARNING: I have 0 idea if it works I am sorry-
-# actually might test it rn-
-
 function ion:load:
     tellraw @a "Ion has successfully loaded"
-    tellraw @a "// just a marker for me so I know my changes to anything rn"
 
     scoreboard objectives add ion.particle.age dummy
     scoreboard objectives add ion.color_channels dummy
@@ -19,7 +15,7 @@ function ion:load:
     scoreboard players set #65536 ion.consts 65536
     scoreboard players set #256 ion.consts 256
 
-# we ideally would want such functions to be somewhere in like `ion:internal/calc.color_from_storage` or something idk
+
 function ion:internal/calc.color_from_storage:
     store result score #A ion.color_channels run data get storage ion:color channels.A
     store result score #R ion.color_channels run data get storage ion:color channels.R
@@ -38,11 +34,11 @@ function ion:internal/calc.color_from_storage:
 
 
 function ion:internal/particle/setup_particle_entity:
-    say RUNS
     tag @s remove ion.NEW
-    data merge storage ion:particle_data_buffer { scale: [0f, 0f, 1f] }
+    data merge storage ion:particle_data_buffer { scale: [1f, .5f, 1f], translation: [-0.013f,-0.065f,0f] }
     execute store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels
 
+    
     # you may use 0.0078125 instead of 1 and 0.0037890625 instead of 0.485
     # so scale score actually represents scale scaled up by a factor of 128
     execute store result storage ion:particle_data_buffer scale[0] float 1.0 \
@@ -50,13 +46,21 @@ function ion:internal/particle/setup_particle_entity:
     execute store result storage ion:particle_data_buffer scale[1] float 0.485 \
         run scoreboard players get #FINAL ion.scale
     
+    execute store result storage ion:particle_data_buffer translation[0] float -0.013 \
+        run scoreboard players get #FINAL ion.scale
+    execute store result storage ion:particle_data_buffer translation[1] float -0.065 \
+        run scoreboard players get #FINAL ion.scale
+    
     data modify entity @s transformation.scale set from storage ion:particle_data_buffer scale
+    data modify entity @s transformation.translation set from storage ion:particle_data_buffer translation
 
 
 
 function ion:particle/summon..show_args:
     # just tellraws the required args for it
     tellraw @s "Not Implemented"
+
+    #tellraw @s 
 
 
 
@@ -74,16 +78,11 @@ function ion:particle/summon.macro:
         Tags:["ion.NEW"], \
         text:{text:" ",color:"white"}, \
         background:-1, \
-        line_width:40, \
+        line_width:400, \
         transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,1f]},\
-        billboard:"center",brightness:{block:15,sky:15} \
+        billboard:"center",brightness:{block:15,sky:15}, alignment:"left" \
     }
 
-    # made it typed and chunk limited
-    # wanted to do execute summon run and then data modify but that's 1 extra nbt modification of an entity
-    # aka extra NBT serialiazation
-    # which is... not great.
-    # so I went with that
     execute positioned ~-.0001 ~-.0001 ~-.0001 as @n[type=text_display,tag=ion.NEW,dx=0] \
         run function ion:internal/particle/setup_particle_entity
 
