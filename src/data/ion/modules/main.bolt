@@ -15,12 +15,7 @@ function ion:load:
     scoreboard players set #256 ion.consts 256
 
 
-
-
-
-function ion:particle/summon:
-    kill @n[type=text_display]
-    $data modify storage ion:color channels set value $(color)
+function ion:particle/calc_color:
     store result score #A ion.color_channels run data get storage ion:color channels.A
     store result score #R ion.color_channels run data get storage ion:color channels.R
     store result score #G ion.color_channels run data get storage ion:color channels.G
@@ -35,6 +30,12 @@ function ion:particle/summon:
     scoreboard players operation #FINAL ion.color_channels += #G ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #B ion.color_channels
     
+
+
+function ion:particle/summon:
+    kill @n[type=text_display]
+    $data modify storage ion:color channels set value $(color)
+    function ion:particle/calc_color
     summon minecraft:text_display ~ ~1 ~ {Tags:["testPar"], text:{text:" ",color:"white"},background:0,line_width:40,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[2f,.97f,2f]},billboard:"center",brightness:{block:15,sky:15}}
 
     execute as @n[tag=testPar] store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels 
