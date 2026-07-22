@@ -6,3 +6,35 @@ append function_tag minecraft:load {
 
 function ion:load:
     tellraw @a "Ion has successfully loaded"
+
+    scoreboard objectives add ion.particle.age dummy
+    scoreboard objectives add ion.color_channels dummy
+    scoreboard objectives add ion.consts dummy
+    scoreboard players set #16777216 ion.consts 16777216
+    scoreboard players set #65536 ion.consts 65536
+    scoreboard players set #256 ion.consts 256
+
+
+
+
+
+function ion:particle/summon:
+    kill @n[type=text_display]
+    $data modify storage ion:color channels set value $(color)
+    store result score #A ion.color_channels run data get storage ion:color channels.A
+    store result score #R ion.color_channels run data get storage ion:color channels.R
+    store result score #G ion.color_channels run data get storage ion:color channels.G
+    store result score #B ion.color_channels run data get storage ion:color channels.B
+    scoreboard players operation #A color_channels *= #16777216 ion.consts
+    scoreboard players operation #R color_channels *= #65536 ion.consts
+    scoreboard players operation #G color_channels *= #256 ion.consts
+
+    scoreboard players set #FINAL color_channels 0
+    scoreboard players operation #FINAL ion.color_channels += #A ion.color_channels
+    scoreboard players operation #FINAL ion.color_channels += #R ion.color_channels
+    scoreboard players operation #FINAL ion.color_channels += #G ion.color_channels
+    scoreboard players operation #FINAL ion.color_channels += #B ion.color_channels
+    
+    summon minecraft:text_display ~ ~1 ~ {Tags:["testPar"], text:{text:" ",color:"white"},background:0,line_width:40,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[2f,.97f,2f]},billboard:"center",brightness:{block:15,sky:15}}
+
+    execute as @n[tag=testPar] store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels 
