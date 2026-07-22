@@ -432,3 +432,7 @@ FodyWeavers.xsd
 *.msm
 *.msp
 .vscode/settings.json
+
+
+# ignore this my brain hurts
+buffer

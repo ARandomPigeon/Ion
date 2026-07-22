@@ -4,18 +4,23 @@ append function_tag minecraft:load {
     ]
 }
 
+## WARNING: I have 0 idea if it works I am sorry-
+# actually might test it rn-
+
 function ion:load:
     tellraw @a "Ion has successfully loaded"
+    tellraw @a "// just a marker for me so I know my changes to anything rn"
 
     scoreboard objectives add ion.particle.age dummy
     scoreboard objectives add ion.color_channels dummy
     scoreboard objectives add ion.consts dummy
+    scoreboard objectives add ion.scale dummy
     scoreboard players set #16777216 ion.consts 16777216
     scoreboard players set #65536 ion.consts 65536
     scoreboard players set #256 ion.consts 256
 
-
-function ion:particle/calc_color:
+# we ideally would want such functions to be somewhere in like `ion:internal/calc.color_from_storage` or something idk
+function ion:internal/calc.color_from_storage:
     store result score #A ion.color_channels run data get storage ion:color channels.A
     store result score #R ion.color_channels run data get storage ion:color channels.R
     store result score #G ion.color_channels run data get storage ion:color channels.G
@@ -29,13 +34,56 @@ function ion:particle/calc_color:
     scoreboard players operation #FINAL ion.color_channels += #R ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #G ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #B ion.color_channels
+
+
+
+function ion:internal/particle/setup_particle_entity:
+    say RUNS
+    tag @s remove ion.NEW
+    data merge storage ion:particle_data_buffer { scale: [0f, 0f, 1f] }
+    execute store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels
+
+    # you may use 0.0078125 instead of 1 and 0.0037890625 instead of 0.485
+    # so scale score actually represents scale scaled up by a factor of 128
+    execute store result storage ion:particle_data_buffer scale[0] float 1.0 \
+        run scoreboard players get #FINAL ion.scale
+    execute store result storage ion:particle_data_buffer scale[1] float 0.485 \
+        run scoreboard players get #FINAL ion.scale
     
+    data modify entity @s transformation.scale set from storage ion:particle_data_buffer scale
 
 
-function ion:particle/summon:
+
+function ion:particle/summon..show_args:
+    # just tellraws the required args for it
+    tellraw @s "Not Implemented"
+
+
+
+function ion:particle/summon.macro:
     kill @n[type=text_display]
     $data modify storage ion:color channels set value $(color)
-    function ion:particle/calc_color
-    summon minecraft:text_display ~ ~1 ~ {Tags:["testPar"], text:{text:" ",color:"white"},background:0,line_width:40,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[2f,.97f,2f]},billboard:"center",brightness:{block:15,sky:15}}
+    function ion:internal/calc.color_from_storage
 
-    execute as @n[tag=testPar] store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels 
+    $scoreboard players set #FINAL ion.scale $(scale)
+
+    # does text really need a color in that case? can't it just be `" "` instead of `{text:" ",color:"white"}`?
+    # like it would sure as heck _need_ to be like that when we have it have custom textures but still
+    # just saying that it might not be needed in here specifically, not that's redundant in general
+    summon minecraft:text_display ~ ~ ~ { \
+        Tags:["ion.NEW"], \
+        text:{text:" ",color:"white"}, \
+        background:-1, \
+        line_width:40, \
+        transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,1f]},\
+        billboard:"center",brightness:{block:15,sky:15} \
+    }
+
+    # made it typed and chunk limited
+    # wanted to do execute summon run and then data modify but that's 1 extra nbt modification of an entity
+    # aka extra NBT serialiazation
+    # which is... not great.
+    # so I went with that
+    execute positioned ~-.0001 ~-.0001 ~-.0001 as @n[type=text_display,tag=ion.NEW,dx=0] \
+        run function ion:internal/particle/setup_particle_entity
+
