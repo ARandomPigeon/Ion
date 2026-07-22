@@ -45,9 +45,9 @@ function ion:internal/particle/setup_particle_entity:
 
     # you may use 0.0078125 instead of 1 and 0.0037890625 instead of 0.485
     # so scale score actually represents scale scaled up by a factor of 128
-    execute store result storage ion:particle_data_buffer scale[0] float 1.0 \
+    execute store result storage ion:particle_data_buffer scale[0] float 1.0
         run scoreboard players get #FINAL ion.scale
-    execute store result storage ion:particle_data_buffer scale[1] float 0.485 \
+    execute store result storage ion:particle_data_buffer scale[1] float 0.485
         run scoreboard players get #FINAL ion.scale
     
     data modify entity @s transformation.scale set from storage ion:particle_data_buffer scale
@@ -70,13 +70,13 @@ function ion:particle/summon.macro:
     # does text really need a color in that case? can't it just be `" "` instead of `{text:" ",color:"white"}`?
     # like it would sure as heck _need_ to be like that when we have it have custom textures but still
     # just saying that it might not be needed in here specifically, not that's redundant in general
-    summon minecraft:text_display ~ ~ ~ { \
-        Tags:["ion.NEW"], \
-        text:{text:" ",color:"white"}, \
-        background:-1, \
-        line_width:40, \
+    summon minecraft:text_display ~ ~ ~ {
+        Tags:["ion.NEW"],
+        text:{text:" ",color:"white"},
+        background:-1,
+        line_width:40,
         transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,1f]},\
-        billboard:"center",brightness:{block:15,sky:15} \
+        billboard:"center",brightness:{block:15,sky:15}
     }
 
     # made it typed and chunk limited
@@ -84,6 +84,6 @@ function ion:particle/summon.macro:
     # aka extra NBT serialiazation
     # which is... not great.
     # so I went with that
-    execute positioned ~-.0001 ~-.0001 ~-.0001 as @n[type=text_display,tag=ion.NEW,dx=0] \
+    execute positioned ~-.0001 ~-.0001 ~-.0001 as @n[type=text_display,tag=ion.NEW,dx=0]
         run function ion:internal/particle/setup_particle_entity
 
