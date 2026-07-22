@@ -39,7 +39,7 @@ function ion:internal/particle/setup_particle_entity:
     execute store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels
 
     
-    # you may use 0.0078125 instead of 1 and 0.0037890625 instead of 0.485
+    # you may use 0.0078125 instead of 1 and 0.00390625 instead of 0.5
     # so scale score actually represents scale scaled up by a factor of 128
     execute store result storage ion:particle_data_buffer scale[0] float 1.0 \
         run scoreboard players get #FINAL ion.scale
@@ -57,10 +57,22 @@ function ion:internal/particle/setup_particle_entity:
 
 
 function ion:particle/summon..show_args:
-    # just tellraws the required args for it
-    tellraw @s "Not Implemented"
-
-    #tellraw @s 
+    tellraw @s ""
+    tellraw @s [ \
+        {"text":"","color":"gray"}, \
+        {"text":"   ","strikethrough":true}, " [", {"text":"ion:particle/summon", "color":"red"}, "] ", {"text":"Arguments:\n", "color":"red"}, \
+        " - ", {"text":"color", "color":"red"}, ": ", {"text":"Compound", "color":"gold"}, " {\n", \
+        "     - ", {"text": "A", "color":"red"}, ": ", {"text": "Int (0-255)", "color": "gold"}, " (Alpha channel)\n", \
+        "     - ", {"text": "R", "color":"red"}, ": ", {"text": "Int (0-255)", "color": "gold"}, " (Red channel)\n", \
+        "     - ", {"text": "G", "color":"red"}, ": ", {"text": "Int (0-255)", "color": "gold"}, " (Green channel)\n", \
+        "     - ", {"text": "B", "color":"red"}, ": ", {"text": "Int (0-255)", "color": "gold"}, " (Blue channel)\n", \
+        "   }\n", \
+        "   Used to change the particle's color and alpha.\n", \
+        "\n", \
+        " - ", {"text":"scale", "color":"red"}, ": ", {"text":"Int", "color":"gold"}, "\n", \
+        "   Used to change the particle's scale.\n" \
+    ]
+    tellraw @s ""
 
 
 
