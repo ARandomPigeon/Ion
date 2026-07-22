@@ -9,7 +9,7 @@ append function_tag minecraft:load {
 
 function ion:load:
     tellraw @a "Ion has successfully loaded"
-    tellraw @a "// just a marker for me so I know my changes to anything rn"
+    #tellraw @a "// just a marker for me so I know my changes to anything rn"
 
     scoreboard objectives add ion.particle.age dummy
     scoreboard objectives add ion.color_channels dummy
@@ -75,7 +75,7 @@ function ion:particle/summon.macro:
         text:{text:" ",color:"white"},
         background:-1,
         line_width:40,
-        transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,1f]},\
+        transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,0f]},\
         billboard:"center",brightness:{block:15,sky:15}
     }
 
