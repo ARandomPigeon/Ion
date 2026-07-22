@@ -25,11 +25,11 @@ function ion:particle/summon:
     store result score #R ion.color_channels run data get storage ion:color channels.R
     store result score #G ion.color_channels run data get storage ion:color channels.G
     store result score #B ion.color_channels run data get storage ion:color channels.B
-    scoreboard players operation #A color_channels *= #16777216 ion.consts
-    scoreboard players operation #R color_channels *= #65536 ion.consts
-    scoreboard players operation #G color_channels *= #256 ion.consts
+    scoreboard players operation #A ion.color_channels *= #16777216 ion.consts
+    scoreboard players operation #R ion.color_channels *= #65536 ion.consts
+    scoreboard players operation #G ion.color_channels *= #256 ion.consts
 
-    scoreboard players set #FINAL color_channels 0
+    scoreboard players set #FINAL ion.color_channels 0
     scoreboard players operation #FINAL ion.color_channels += #A ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #R ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #G ion.color_channels
