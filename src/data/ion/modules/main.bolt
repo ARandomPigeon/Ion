@@ -32,9 +32,22 @@ function ion:internal/calc.color_from_storage:
     scoreboard players operation #FINAL ion.color_channels += #B ion.color_channels
 
 
+function ion:internal/particle/ageing:
+    as @e[tag=ion.PARTICLE]:
+        scoreboard players remove @s ion.particle.age 1
+        
+        if score @s ion.particle.age matches 1..
+            run schedule function ion:internal/particle/ageing 1t replace
+        if score @s ion.particle.age matches 0
+            run kill @s
+
 
 function ion:internal/particle/setup_particle_entity:
     tag @s remove ion.NEW
+    tag @s add ion.PARTICLE
+    scoreboard players operation @s ion.particle.age = #MAX_AGE ion.particle.age
+    scoreboard players reset #MAX_AGE ion.particle.age
+    function ion:internal/particle/ageing
     data merge storage ion:particle_data_buffer { scale: [1f, .5f, 1f], translation: [-0.013f,-0.065f,0f] }
     execute store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels
 
@@ -70,19 +83,22 @@ function ion:particle/summon..show_args:
         "   Used to change the particle's color and alpha.\n", \
         "\n", \
         " - ", {"text":"scale", "color":"red"}, ": ", {"text":"Int", "color":"gold"}, "\n", \
-        "   Used to change the particle's scale.\n" \
+        "   Used to change the particle's scale.\n", \
+        "\n", \
+        " - ", {"text":"age", "color":"red"}, ": ", {"text":"Int", "color":"gold"}, "\n", \
+        "   Used to set how long the particle exists in ticks.\n" \
     ]
     tellraw @s ""
 
 
 
 function ion:particle/summon.macro:
-    kill @n[type=text_display]
+    kill @n[tag=ion.PARTICLE]
     $data modify storage ion:color channels set value $(color)
     function ion:internal/calc.color_from_storage
 
     $scoreboard players set #FINAL ion.scale $(scale)
-
+    $scoreboard players set #MAX_AGE ion.particle.age $(age)
     # does text really need a color in that case? can't it just be `" "` instead of `{text:" ",color:"white"}`?
     # like it would sure as heck _need_ to be like that when we have it have custom textures but still
     # just saying that it might not be needed in here specifically, not that's redundant in general
