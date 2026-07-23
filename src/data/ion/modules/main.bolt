@@ -41,7 +41,7 @@ function ion:internal/particle/age_backup_check:
 
 function ion:internal/particle/ageing:
     as @e[tag=ion.PARTICLE]:
-        scoreboard players remove @s ion.particle.age 1
+        scoreboard players remove @s[scores={ion.particle.age=1..}] ion.particle.age 1
         
         if score @s ion.particle.age matches 1..
             run schedule function ion:internal/particle/ageing 1t replace
