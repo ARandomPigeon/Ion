@@ -14,6 +14,7 @@ function ion:load:
     scoreboard players set #16777216 ion.consts 16777216
     scoreboard players set #65536 ion.consts 65536
     scoreboard players set #256 ion.consts 256
+    function ion:internal/particle/age_backup_check
 
 
 function ion:internal/calc.color_from_storage:
@@ -30,6 +31,12 @@ function ion:internal/calc.color_from_storage:
     scoreboard players operation #FINAL ion.color_channels += #R ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #G ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #B ion.color_channels
+
+function ion:internal/particle/age_backup_check:
+    as @e[tag=ion.PARTICLE]:
+        function ion:internal/particle/ageing
+    
+    schedule function ion:internal/particle/age_backup_check 4s replace
 
 
 function ion:internal/particle/ageing:
