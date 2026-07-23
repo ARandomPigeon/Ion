@@ -14,7 +14,7 @@ function ion:load:
     scoreboard players set #16777216 ion.consts 16777216
     scoreboard players set #65536 ion.consts 65536
     scoreboard players set #256 ion.consts 256
-    function ion:internal/particle/age_backup_check
+    function ion:internal/particle/tick_background_check
 
 
 function ion:internal/calc.color_from_storage:
@@ -32,11 +32,12 @@ function ion:internal/calc.color_from_storage:
     scoreboard players operation #FINAL ion.color_channels += #G ion.color_channels
     scoreboard players operation #FINAL ion.color_channels += #B ion.color_channels
 
-function ion:internal/particle/age_backup_check:
+function ion:internal/particle/tick_background_check:
     as @e[tag=ion.PARTICLE]:
         function ion:internal/particle/ageing
+        function ion:internal/particle/bs_motion
     
-    schedule function ion:internal/particle/age_backup_check 4s replace
+    schedule function ion:internal/particle/tick_background_check 4s replace
 
 
 function ion:internal/particle/ageing:
@@ -48,6 +49,10 @@ function ion:internal/particle/ageing:
         if score @s ion.particle.age matches 0
             run kill @s
 
+function ion:internal/particle/bs_motion:
+    as @e[tag=ion.PARTICLE]:
+        function #bs.move:apply_vel {scale:0.001,with:{}}
+    schedule function ion:internal/particle/bs_motion 1t replace
 
 function ion:internal/particle/setup_particle_entity:
     tag @s remove ion.NEW
@@ -59,6 +64,17 @@ function ion:internal/particle/setup_particle_entity:
     execute store result entity @s background int 1 run scoreboard players get #FINAL ion.color_channels
 
     
+    # Gets velocity from macro and puts it into bookshelf's scores
+    execute store result score @s bs.vel.x run \
+        data get storage ion:particle_data_buffer velocity.x
+    execute store result score @s bs.vel.y run \
+        data get storage ion:particle_data_buffer velocity.y
+    execute store result score @s bs.vel.z run \
+        data get storage ion:particle_data_buffer velocity.z
+    function ion:internal/particle/bs_motion
+    
+
+
     # you may use 0.0078125 instead of 1 and 0.00390625 instead of 0.5
     # so scale score actually represents scale scaled up by a factor of 128
     execute store result storage ion:particle_data_buffer scale[0] float 1.0 \
@@ -102,10 +118,13 @@ function ion:particle/summon..show_args:
 function ion:particle/summon.macro:
     kill @n[tag=ion.PARTICLE]
     $data modify storage ion:color channels set value $(color)
+    $data modify storage ion:particle_data_buffer velocity set value $(velocity)
     function ion:internal/calc.color_from_storage
 
     $scoreboard players set #FINAL ion.scale $(scale)
     $scoreboard players set #MAX_AGE ion.particle.age $(age)
+
+
     # does text really need a color in that case? can't it just be `" "` instead of `{text:" ",color:"white"}`?
     # like it would sure as heck _need_ to be like that when we have it have custom textures but still
     # just saying that it might not be needed in here specifically, not that's redundant in general
@@ -117,7 +136,8 @@ function ion:particle/summon.macro:
         background:-1,
         line_width:40,
         transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[0f,0f,0f]},
-        billboard:"center",brightness:{block:15,sky:15}
+        billboard:"center",brightness:{block:15,sky:15},
+        teleport_duration:3
     }
 
     execute positioned ~-.0001 ~-.0001 ~-.0001 as @n[type=text_display,tag=ion.NEW,dx=0]
